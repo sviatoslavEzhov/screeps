@@ -5,7 +5,7 @@ Object.defineProperty(Creep.prototype, "hasFreeCapacity", {
 });
 
 Creep.prototype.miner = function (): void {
-  if (this.hasFreeCapacity) {
+  if (this.store.getFreeCapacity() > 0) {
     const sources = this.room.find(FIND_SOURCES);
 
     if (this.harvest(sources[0]) === ERR_NOT_IN_RANGE) {

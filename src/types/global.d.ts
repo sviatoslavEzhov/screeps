@@ -6,6 +6,10 @@ interface Creep {
   hasFreeCapacity: boolean;
 }
 
+interface SpawnMemory {
+  active: boolean;
+}
+
 interface CreepMemory {
   role: Role;
   building?: boolean;

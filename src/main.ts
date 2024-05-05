@@ -1,4 +1,5 @@
 import { ErrorMapper } from "utils/ErrorMapper";
+import initGame from "initGame";
 // eslint-disable-next-line sort-imports
 import "proptotypes/Creep";
 import { workers } from "configs/bodySetups";
@@ -40,6 +41,7 @@ const creepSettings = (role: CreepMemory["role"]) => {
   };
 };
 
+initGame();
 export const loop = ErrorMapper.wrapLoop(() => {
   // const getCreepsRoles = (): Partial<CreepsMemoryRoles> => {
   //   return Object.values(Game.creeps).reduce((creepsRoles: Partial<CreepsMemoryRoles>, creep: Creep) => {
@@ -51,6 +53,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const role = getRole();
   const spawnArgs = creepSettings(role);
 
+  // SPAWN LOGIC
   if (Object.keys(Game.creeps).length < maxCreeps) {
     Game.spawns.Spawn1.spawnCreep(spawnArgs.body, spawnArgs.name, spawnArgs.opts);
   }
@@ -62,6 +65,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
+  // CREEP LOGIC
   for (const name in Game.creeps) {
     const creep = Game.creeps[name];
     creep.memory.role = role;
