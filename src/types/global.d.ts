@@ -10,6 +10,19 @@ interface SpawnMemory {
   active: boolean;
 }
 
+interface Memory {
+  logistics: {
+    resourceProviders: {
+      energy: {
+        [key: Id<Source>]: {
+          active: boolean;
+          providerCors: any[];
+        };
+      };
+    };
+  };
+}
+
 interface CreepMemory {
   role: Role;
   building?: boolean;

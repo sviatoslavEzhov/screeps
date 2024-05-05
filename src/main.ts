@@ -12,7 +12,6 @@ const getRole = (): Role => {
   const spawnerFreeEnergy =
     Game.rooms.sim.energyCapacityAvailable > Game.rooms.sim.energyAvailable ||
     containers[0].store.getFreeCapacity(RESOURCE_ENERGY);
-  console.log("STRUCTURE_CONTAINER", containers[0].store.getFreeCapacity(RESOURCE_ENERGY));
 
   if (spawnerFreeEnergy) {
     return "miner";

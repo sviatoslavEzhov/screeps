@@ -1,9 +1,3 @@
-Object.defineProperty(Creep.prototype, "hasFreeCapacity", {
-  get(this: Creep): boolean {
-    return this.store.getFreeCapacity() > 0;
-  }
-});
-
 Creep.prototype.miner = function (): void {
   if (this.store.getFreeCapacity() > 0) {
     const sources = this.room.find(FIND_SOURCES);
