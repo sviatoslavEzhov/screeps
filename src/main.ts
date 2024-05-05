@@ -1,10 +1,17 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 // eslint-disable-next-line sort-imports
 import "proptotypes/Creep";
+import { workers } from "configs/bodySetups";
 
-const maxCreeps = 3;
+const maxCreeps = 4;
 const getRole = (): Role => {
-  const spawnerFreeEnergy = Game.spawns.Spawn1.store.getFreeCapacity(RESOURCE_ENERGY);
+  const containers: StructureContainer[] = Game.rooms.sim.find(FIND_STRUCTURES, {
+    filter: structure => structure.structureType === STRUCTURE_CONTAINER
+  });
+  const spawnerFreeEnergy =
+    Game.rooms.sim.energyCapacityAvailable > Game.rooms.sim.energyAvailable ||
+    containers[0].store.getFreeCapacity(RESOURCE_ENERGY);
+  console.log("STRUCTURE_CONTAINER", containers[0].store.getFreeCapacity(RESOURCE_ENERGY));
 
   if (spawnerFreeEnergy) {
     return "miner";
@@ -19,25 +26,30 @@ const getRole = (): Role => {
   return "upgrader";
 };
 
-const creepSettings = (role: CreepMemory["role"]) => ({
-  body: [WORK, CARRY, MOVE] as BodyPartConstant[],
-  name: `worker-${Game.time}`,
-  opts: { memory: { role } } as SpawnOptions
-});
+const creepSettings = (role: CreepMemory["role"]) => {
+  const energyCapacity = Game.rooms.sim.energyCapacityAvailable;
+  const isBodyExists = energyCapacity in workers;
+  const bodyKey: keyof typeof workers = isBodyExists
+    ? energyCapacity
+    : Object.keys(workers).sort((a, b) => Number(a) - Number(b))[0];
+
+  return {
+    body: workers[bodyKey],
+    name: `worker-${Game.time}`,
+    opts: { memory: { role } } as SpawnOptions
+  };
+};
 
 export const loop = ErrorMapper.wrapLoop(() => {
-  const getCreepsRoles = (): Partial<CreepsMemoryRoles> => {
-    return Object.values(Game.creeps).reduce((creepsRoles: Partial<CreepsMemoryRoles>, creep: Creep) => {
-      creepsRoles[creep.memory.role] = (creepsRoles[creep.memory.role] || 0) + 1;
-      return creepsRoles;
-    }, {});
-  };
+  // const getCreepsRoles = (): Partial<CreepsMemoryRoles> => {
+  //   return Object.values(Game.creeps).reduce((creepsRoles: Partial<CreepsMemoryRoles>, creep: Creep) => {
+  //     creepsRoles[creep.memory.role] = (creepsRoles[creep.memory.role] || 0) + 1;
+  //     return creepsRoles;
+  //   }, {});
+  // };
 
   const role = getRole();
   const spawnArgs = creepSettings(role);
-
-  console.log("Current creeps roles:", JSON.stringify(getCreepsRoles()));
-  console.log("Current role to spawn:", role);
 
   if (Object.keys(Game.creeps).length < maxCreeps) {
     Game.spawns.Spawn1.spawnCreep(spawnArgs.body, spawnArgs.name, spawnArgs.opts);
